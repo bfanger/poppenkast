@@ -1,5 +1,4 @@
 import { getProject } from "@theatre/core";
-// import state from "./state.json";
 
 if (import.meta.env.DEV) {
   await import("./studio");

@@ -7,17 +7,7 @@ settings:
 importers:
 
   .:
-    dependencies:
-      '@types/three':
-        specifier: ^0.182.0
-        version: 0.182.0
-      three:
-        specifier: ^0.183.0
-        version: 0.183.0
     devDependencies:
-      '@litertjs/core':
-        specifier: ^2.0.0
-        version: 2.0.0
       '@mediapipe/hands':
         specifier: ^0.4.1675469240
         version: 0.4.1675469240
@@ -45,6 +35,9 @@ importers:
       '@types/react-dom':
         specifier: ^19.2.3
         version: 19.2.3(@types/react@19.2.14)
+      '@types/three':
+        specifier: ^0.182.0
+        version: 0.182.0
       '@vitejs/plugin-react':
         specifier: ^5.1.4
         version: 5.1.4(vite@7.3.1)
@@ -60,6 +53,9 @@ importers:
       react-dom:
         specifier: ^19.2.4
         version: 19.2.4(react@19.2.4)
+      three:
+        specifier: ^0.183.0
+        version: 0.183.0
       tween.js:
         specifier: ^16.6.0
         version: 16.6.0
@@ -333,12 +329,6 @@ packages:
 
   '@jridgewell/trace-mapping@0.3.31':
     resolution: {integrity: sha512-zzNR+SdQSDJzc8joaeP8QQoCQr8NuYx2dIIytl1QeBEZHJ9uW6hebsrYgbz8hJwUQao3TWCMtmfV8Nu1twOLAw==}
-
-  '@litertjs/core@2.0.0':
-    resolution: {integrity: sha512-wt1ECMkxUrTwW5SlVa16aL59u5c1dKPDAWvNA+JyNVUHiXsqJAlpu+UhhiaeKhJkRPsf/wvRfY3yyXPnz1PxmA==}
-
-  '@litertjs/wasm-utils@2.0.0':
-    resolution: {integrity: sha512-TimssmDKn2zL2qSuJbgjrUIgB6oEXhneQjQyy1W6Hlyw15+dtMfLch5yZ40/MLn5TnE80hY46x3hnjXFF3UKsA==}
 
   '@mediapipe/hands@0.4.1675469240':
     resolution: {integrity: sha512-GxoZvL1mmhJxFxjuyj7vnC++JIuInGznHBin5c7ZSq/RbcnGyfEcJrkM/bMu5K1Mz/2Ko+vEX6/+wewmEHPrHg==}
@@ -1337,12 +1327,6 @@ snapshots:
     dependencies:
       '@jridgewell/resolve-uri': 3.1.2
       '@jridgewell/sourcemap-codec': 1.5.5
-
-  '@litertjs/core@2.0.0':
-    dependencies:
-      '@litertjs/wasm-utils': 2.0.0
-
-  '@litertjs/wasm-utils@2.0.0': {}
 
   '@mediapipe/hands@0.4.1675469240': {}
 

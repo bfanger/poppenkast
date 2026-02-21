@@ -5,7 +5,7 @@ import {
   SupportedModels,
   type Hand,
 } from "@tensorflow-models/hand-pose-detection";
-import getWebcam from "../webcam";
+import getWebcam from "./webcam";
 import { useEffect } from "react";
 
 const model = SupportedModels.MediaPipeHands;

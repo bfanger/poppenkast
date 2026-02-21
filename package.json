@@ -9,11 +9,10 @@
     "preview": "vite preview",
     "lint": "tsc && prettier --check src",
     "format": "prettier --write src",
-    "postinstall": "cp -r node_modules/@litertjs/core/wasm public/litert_wasm && cp node_modules/@mediapipe/hands/hand_landmark_full.tflite public/model.tflite && cp -r node_modules/@mediapipe/hands public/mediapipe_hands",
+    "postinstall": "cp -r node_modules/@mediapipe/hands public/mediapipe_hands",
     "prepare": "husky || true"
   },
   "devDependencies": {
-    "@litertjs/core": "^2.0.0",
     "@mediapipe/hands": "^0.4.1675469240",
     "@react-three/drei": "^10.7.7",
     "@react-three/fiber": "^9.5.0",
@@ -23,17 +22,15 @@
     "@theatre/studio": "^0.7.2",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
+    "@types/three": "^0.182.0",
     "@vitejs/plugin-react": "^5.1.4",
     "husky": "^9.1.7",
     "prettier": "^3.8.1",
     "react": "^19.2.4",
     "react-dom": "^19.2.4",
+    "three": "^0.183.0",
     "tween.js": "^16.6.0",
     "typescript": "~5.9.3",
     "vite": "^7.3.1"
-  },
-  "dependencies": {
-    "@types/three": "^0.182.0",
-    "three": "^0.183.0"
   }
 }
