@@ -1,8 +1,6 @@
 import { useRef } from "react";
 import useHands from "../services/useHands";
 import { Group } from "three";
-import { useFrame } from "@react-three/fiber";
-import type { Hand } from "@tensorflow-models/hand-pose-detection";
 
 type Props = {
   scale: number;

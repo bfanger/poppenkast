@@ -1,13 +1,16 @@
 {
-  "name": "hands",
+  "name": "poppenkast",
   "private": true,
   "version": "0.0.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc && vite build",
+    "build": "vite build",
     "preview": "vite preview",
-    "postinstall": "cp -r node_modules/@litertjs/core/wasm public/litert_wasm && cp node_modules/@mediapipe/hands/hand_landmark_full.tflite public/model.tflite && cp -r node_modules/@mediapipe/hands public/mediapipe_hands"
+    "lint": "tsc && prettier --check src",
+    "format": "prettier --write src",
+    "postinstall": "cp -r node_modules/@litertjs/core/wasm public/litert_wasm && cp node_modules/@mediapipe/hands/hand_landmark_full.tflite public/model.tflite && cp -r node_modules/@mediapipe/hands public/mediapipe_hands",
+    "prepare": "husky || true"
   },
   "devDependencies": {
     "@litertjs/core": "^2.0.0",
@@ -21,6 +24,8 @@
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react": "^5.1.4",
+    "husky": "^9.1.7",
+    "prettier": "^3.8.1",
     "react": "^19.2.4",
     "react-dom": "^19.2.4",
     "tween.js": "^16.6.0",
