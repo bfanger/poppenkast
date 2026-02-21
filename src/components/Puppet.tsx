@@ -67,6 +67,14 @@ export default function Puppet() {
       angle *= 25;
       body.rotation.set(0, lerp(body.rotation.y, angle, 0.3), 0);
     }
+    // Position based on 2D location on camera
+    const x = mapTo(hand.keypoints[0].x, 0, 640, -2, 2);
+    const y = mapTo(hand.keypoints[0].y, 0, 480, 0.5, -2.5);
+    body.position.set(
+      lerp(body.position.x, x, 0.9),
+      lerp(body.position.y, y, 0.7),
+      0,
+    );
   });
 
   useEffect(() => {
