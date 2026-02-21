@@ -6,4 +6,5 @@ if (import.meta.env.DEV) {
 }
 
 export const project = getProject("Poppenkast"); //, { state }
+export const sceneSheet = project.sheet("Scene");
 export const puppetSheet = project.sheet("Puppet");

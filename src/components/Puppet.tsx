@@ -1,10 +1,10 @@
 import { useGLTF } from "@react-three/drei";
 import gltfUrl from "./Puppet.glb?url";
-import { editable as e, SheetProvider } from "@theatre/r3f";
-import { useEffect, useRef } from "react";
+import { SheetProvider } from "@theatre/r3f";
+import { useEffect } from "react";
 import { types } from "@theatre/core";
 import useHands from "../services/useHands";
-import { Group, Vector3 } from "three";
+import { Vector3 } from "three";
 import { puppetSheet } from "../services/theatre";
 import mapTo from "../services/mapTo";
 import lerp from "../services/lerp";
@@ -12,8 +12,6 @@ import lerp from "../services/lerp";
 export default function Puppet() {
   const gltf = useGLTF(gltfUrl);
   const object = gltf.nodes.Puppet;
-
-  const debugRef = useRef<Group>(null);
 
   useHands((hands) => {
     const hand = hands[0];
@@ -39,31 +37,19 @@ export default function Puppet() {
       Math.min(distanceIndexFinger, distanceMiddleFinger),
       0.05,
       0.15,
-      1.6,
-      0,
+      1.8,
+      -0.4,
     );
 
     const head = gltf.nodes.Head;
     head.rotation.set(lerp(head.rotation.x, mouthAngle, 0.8), 0, 0);
-
-    const scale = 10;
-    debugRef.current?.children.map((mesh, i) => {
-      const pos = hand.keypoints3D?.[i];
-      if (pos) {
-        mesh.position.set(
-          pos.x * -scale - 1,
-          pos.y * -scale,
-          (pos.z ?? 0) * scale,
-        );
-      }
-    });
   });
 
   useEffect(() => {
     const head = gltf.nodes.Head;
     const editableHead = puppetSheet.object("Head", {
       rotation: types.compound({
-        x: types.number(head.rotation.x, { range: [0, 1.6] }),
+        x: types.number(head.rotation.x, { range: [-1, 2] }),
         y: types.number(head.rotation.y),
         z: types.number(head.rotation.z),
       }),
@@ -74,7 +60,7 @@ export default function Puppet() {
     });
 
     const body = gltf.nodes.Body;
-    body.position.x = 1;
+    // body.position.x = 0;
     const editableBody = puppetSheet.object("Body", {
       rotation: types.compound({
         x: types.number(body.rotation.x),
@@ -94,34 +80,6 @@ export default function Puppet() {
   return (
     <SheetProvider sheet={puppetSheet}>
       <primitive object={object} />
-
-      <group ref={debugRef}>
-        {new Array(20).fill(0).map((_, i) => (
-          <mesh key={i}>
-            {i == 0 ? (
-              <>
-                <sphereGeometry args={[0.06]} />
-                <meshStandardMaterial color="gray" />
-              </>
-            ) : i == 4 ? (
-              <>
-                <sphereGeometry args={[0.08]} />
-                <meshStandardMaterial color="red" />
-              </>
-            ) : i == 12 || i === 8 ? (
-              <>
-                <sphereGeometry args={[0.06]} />
-                <meshStandardMaterial color="blue" />
-              </>
-            ) : (
-              <>
-                <sphereGeometry args={[0.05]} />
-                <meshStandardMaterial color="lightgray" />
-              </>
-            )}
-          </mesh>
-        ))}
-      </group>
     </SheetProvider>
   );
 }
