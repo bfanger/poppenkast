@@ -4,10 +4,14 @@ import { PerspectiveCamera } from "@react-three/drei";
 import Puppet from "./Puppet";
 import { sceneSheet } from "../services/theatre";
 import HandsDebugger from "./HandsDebugger";
+import { useGLTF } from "@react-three/drei";
+import gltfUrl from "./Puppet.glb?url";
 
 const EditableCamera = e(PerspectiveCamera, "perspectiveCamera");
 
 export default function App() {
+  const ernie = useGLTF(gltfUrl);
+
   return (
     <Canvas
       gl={{ preserveDrawingBuffer: true }}
@@ -31,7 +35,8 @@ export default function App() {
           intensity={5}
         />
 
-        <Puppet />
+        <Puppet handedness="Left" gltf={ernie} />
+        <Puppet handedness="Right" gltf={ernie} />
         <HandsDebugger scale={3} position={[0, -1.3, 0.5]} flippedY />
       </SheetProvider>
     </Canvas>

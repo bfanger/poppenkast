@@ -1,26 +1,32 @@
-import { useGLTF } from "@react-three/drei";
-import gltfUrl from "./Puppet.glb?url";
 import { SheetProvider } from "@theatre/r3f";
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import { types } from "@theatre/core";
-import useHands from "../services/useHands";
+import useHands, { type Hand3D } from "../services/useHands";
 import { Vector3 } from "three";
 import { puppetSheet } from "../services/theatre";
 import mapTo from "../services/mapTo";
 import lerp from "../services/lerp";
 import { clamp } from "three/src/math/MathUtils.js";
+import { useGraph, type ObjectMap } from "@react-three/fiber";
+import { SkeletonUtils, type GLTF } from "three-stdlib";
 
-export default function Puppet() {
-  const gltf = useGLTF(gltfUrl);
-  const object = gltf.nodes.Puppet;
+type Props = {
+  handedness: Hand3D["handedness"];
+  gltf: ObjectMap & GLTF;
+};
+export default function Puppet({ handedness, gltf }: Props) {
+  const clone = useMemo(() => SkeletonUtils.clone(gltf.scene), [gltf.scene]);
+  const { nodes } = useGraph(clone);
 
   useHands((hands) => {
-    const hand = hands[0];
+    const hand = hands.find((h) => h.handedness === handedness);
     if (!hand?.keypoints3D) {
+      nodes.Puppet.visible = false;
       return;
     }
-    const body = gltf.nodes.Body;
-    const head = gltf.nodes.Head;
+    nodes.Puppet.visible = true;
+    const body = nodes.Body;
+    const head = nodes.Head;
     const thumb = hand.keypoints3D[4];
     const indexMcp = hand.keypoints3D[5];
     const indexFinger = hand.keypoints3D[8];
@@ -78,8 +84,8 @@ export default function Puppet() {
   });
 
   useEffect(() => {
-    const head = gltf.nodes.Head;
-    const editableHead = puppetSheet.object("Head", {
+    const head = nodes.Head;
+    const editableHead = puppetSheet.object("Head" + handedness, {
       rotation: types.compound({
         x: types.number(head.rotation.x, { range: [-1, 2] }),
         y: types.number(head.rotation.y),
@@ -91,8 +97,8 @@ export default function Puppet() {
       head.rotation.set(x, y, z);
     });
 
-    const body = gltf.nodes.Body;
-    const editableBody = puppetSheet.object("Body", {
+    const body = nodes.Body;
+    const editableBody = puppetSheet.object("Body" + handedness, {
       rotation: types.compound({
         x: types.number(body.rotation.x),
         y: types.number(body.rotation.y),
@@ -104,13 +110,13 @@ export default function Puppet() {
       body.rotation.set(x, y, z);
     });
     return () => {
-      puppetSheet.detachObject("Body");
-      puppetSheet.detachObject("Head");
+      puppetSheet.detachObject("Body" + handedness);
+      puppetSheet.detachObject("Head" + handedness);
     };
   }, []);
   return (
     <SheetProvider sheet={puppetSheet}>
-      <primitive object={object} />
+      <primitive object={nodes.Puppet} />
     </SheetProvider>
   );
 }
