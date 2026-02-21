@@ -32,7 +32,7 @@ export default function App() {
         />
 
         <Puppet />
-        <HandsDebugger scale={3} position={[0, -1.2, 0.5]} />
+        <HandsDebugger scale={3} position={[0, -1.3, 0.5]} flippedY />
       </SheetProvider>
     </Canvas>
   );

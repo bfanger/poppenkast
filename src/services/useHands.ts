@@ -4,6 +4,7 @@ import {
   createDetector,
   SupportedModels,
   type Hand,
+  type Keypoint,
 } from "@tensorflow-models/hand-pose-detection";
 import getWebcam from "./webcam";
 import { useEffect } from "react";
@@ -15,7 +16,8 @@ const detector = await createDetector(model, {
   modelType: "full",
   maxHands: 2,
 });
-let hands: Hand[] = [];
+type Keypoint3D = Omit<Keypoint, "z"> & { z: number };
+export type Hand3D = Omit<Hand, "keypoints3D"> & { keypoints3D: Keypoint3D[] };
 
 const video = await getWebcam();
 
@@ -24,16 +26,16 @@ async function update() {
   const { currentTime } = video;
   if (currentTime !== previousTime) {
     previousTime = currentTime;
-    hands = await detector.estimateHands(video);
-    draw();
+    const hands = (await detector.estimateHands(video)) as Hand3D[];
+    dispatch(hands);
   }
   requestAnimationFrame(update);
 }
 update();
-type Callback = (hands: Hand[]) => void;
+type Callback = (hands: Hand3D[]) => void;
 let eventBus: Callback[] = [];
 
-function draw() {
+function dispatch(hands: Hand3D[]) {
   for (const fn of eventBus) {
     fn(hands);
   }

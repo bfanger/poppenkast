@@ -9,7 +9,6 @@ document.body.appendChild(el);
 const root = createRoot(el);
 root.render(
   <Suspense fallback={Loading()}>
-    {" "}
     <LazyApp />
   </Suspense>,
 );

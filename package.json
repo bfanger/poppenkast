@@ -9,7 +9,7 @@
     "preview": "vite preview",
     "lint": "tsc && prettier --check src",
     "format": "prettier --write src",
-    "postinstall": "cp -r node_modules/@mediapipe/hands public/mediapipe_hands",
+    "postinstall": "mkdir -p public/mediapipe_hands && cp -r node_modules/@mediapipe/hands/* public/mediapipe_hands",
     "prepare": "husky || true"
   },
   "devDependencies": {

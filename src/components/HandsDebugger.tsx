@@ -4,10 +4,19 @@ import { Group } from "three";
 
 type Props = {
   scale: number;
+  flippedX?: boolean;
+  flippedY?: boolean;
   position?: [x: number, y: number, z: number];
 };
-export default function HandsDebugger({ scale, position }: Props) {
+export default function HandsDebugger({
+  scale,
+  flippedX = false,
+  flippedY = false,
+  position,
+}: Props) {
   const groupRef = useRef<Group>(null);
+  const scaleX = flippedX ? scale * -1 : scale;
+  const scaleY = flippedY ? scale * -1 : scale;
 
   useHands((hands) => {
     const group = groupRef.current;
@@ -23,7 +32,7 @@ export default function HandsDebugger({ scale, position }: Props) {
     group.children.map((mesh, i) => {
       const pos = hand.keypoints3D?.[i];
       if (pos) {
-        mesh.position.set(pos.x * -scale, pos.y * -scale, (pos.z ?? 0) * scale);
+        mesh.position.set(pos.x * scaleX, pos.y * scaleY, (pos.z ?? 0) * scale);
       }
     });
   });
