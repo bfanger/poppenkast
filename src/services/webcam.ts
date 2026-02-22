@@ -1,5 +1,6 @@
 export const cameraWidth = 640;
 export const cameraHeight = 480;
+
 export default async function getWebcam() {
   if (getWebcam.video) {
     return getWebcam.video;
@@ -14,3 +15,8 @@ export default async function getWebcam() {
   return video;
 }
 getWebcam.video = undefined as HTMLVideoElement | undefined;
+
+export async function webcamPermission() {
+  const status = await navigator.permissions.query({ name: "camera" });
+  return status.state;
+}
