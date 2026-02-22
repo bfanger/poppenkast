@@ -29,9 +29,9 @@ async function update() {
     const hands = (await detector.estimateHands(video)) as Hand3D[];
     dispatch(hands);
   }
-  requestAnimationFrame(update);
+  requestAnimationFrame(() => void update());
 }
-update();
+void update();
 type Callback = (hands: Hand3D[]) => void;
 let eventBus: Callback[] = [];
 
@@ -46,7 +46,7 @@ export default function useHands(fn: Callback) {
     eventBus.push(fn);
 
     return () => {
-      eventBus = eventBus.filter((entry) => entry != fn);
+      eventBus = eventBus.filter((entry) => entry !== fn);
     };
   });
 }

@@ -17,17 +17,18 @@ type Props = {
 };
 export default function Puppet({ handedness, gltf }: Props) {
   const clone = useMemo(() => SkeletonUtils.clone(gltf.scene), [gltf.scene]);
-  const { nodes } = useGraph(clone);
+  const {
+    nodes: { Puppet: puppet, Body: body, Head: head },
+  } = useGraph(clone);
 
   useHands((hands) => {
     const hand = hands.find((h) => h.handedness === handedness);
     if (!hand?.keypoints3D) {
-      nodes.Puppet.visible = false;
+      // eslint-disable-next-line react-hooks/immutability
+      puppet.visible = false;
       return;
     }
-    nodes.Puppet.visible = true;
-    const body = nodes.Body;
-    const head = nodes.Head;
+    puppet.visible = true;
     const thumb = hand.keypoints3D[4];
     const indexMcp = hand.keypoints3D[5];
     const indexFinger = hand.keypoints3D[8];
@@ -54,7 +55,7 @@ export default function Puppet({ handedness, gltf }: Props) {
       1.8,
       -0.4,
     );
-    head.rotation.set(lerp(head.rotation.x, mouthAngle, 0.8), 0, 0);
+    head.rotation.set(lerp(head.rotation.x, mouthAngle, 0.85), 0, 0);
 
     // Rotate body based on knuckle positions
     let outward = false;
@@ -86,8 +87,7 @@ export default function Puppet({ handedness, gltf }: Props) {
   });
 
   useEffect(() => {
-    const head = nodes.Head;
-    const editableHead = puppetSheet.object("Head" + handedness, {
+    const editableHead = puppetSheet.object(`Head${handedness}`, {
       rotation: types.compound({
         x: types.number(head.rotation.x, { range: [-1, 2] }),
         y: types.number(head.rotation.y),
@@ -99,8 +99,7 @@ export default function Puppet({ handedness, gltf }: Props) {
       head.rotation.set(x, y, z);
     });
 
-    const body = nodes.Body;
-    const editableBody = puppetSheet.object("Body" + handedness, {
+    const editableBody = puppetSheet.object(`Body${handedness}`, {
       rotation: types.compound({
         x: types.number(body.rotation.x),
         y: types.number(body.rotation.y),
@@ -112,13 +111,13 @@ export default function Puppet({ handedness, gltf }: Props) {
       body.rotation.set(x, y, z);
     });
     return () => {
-      puppetSheet.detachObject("Body" + handedness);
-      puppetSheet.detachObject("Head" + handedness);
+      puppetSheet.detachObject(`Body${handedness}`);
+      puppetSheet.detachObject(`Head${handedness}`);
     };
-  }, []);
+  }, [handedness, body, head]);
   return (
     <SheetProvider sheet={puppetSheet}>
-      <primitive object={nodes.Puppet} />
+      <primitive object={puppet} />
     </SheetProvider>
   );
 }

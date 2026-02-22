@@ -1,0 +1,15 @@
+{
+  "extends": "./tsconfig.json",
+  "include": [
+    "src/**/*.d.ts",
+    // Additional extensions for eslint
+    "**/*.ts",
+    "**/*.tsx",
+    ".*/**/*.ts",
+    "**/*.cjs",
+    ".*/**/*.cjs",
+    ".*.cjs",
+    "**/*.js",
+    ".*.js"
+  ]
+}

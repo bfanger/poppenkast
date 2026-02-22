@@ -37,25 +37,26 @@ export default function HandDebugger({ handedness, scale, position }: Props) {
   return (
     <group ref={groupRef} position={position}>
       {new Array(20).fill(0).map((_, i) => (
+        /* eslint-disable-next-line @eslint-react/no-array-index-key */
         <mesh key={i}>
-          {i == 0 ? (
+          {i === 0 ? (
             <>
               <sphereGeometry args={[0.008 * scale]} />
               <meshStandardMaterial color="gray" />
             </>
-          ) : i == 4 ? (
+          ) : i === 4 ? (
             <>
               <sphereGeometry args={[0.01 * scale]} />
               <meshStandardMaterial color={color} />
             </>
-          ) : i == 12 || i === 8 ? (
+          ) : i === 12 || i === 8 ? (
             <>
               <sphereGeometry args={[0.008 * scale]} />
               <meshStandardMaterial color={color} />
             </>
           ) : (
             <>
-              <sphereGeometry args={[0.006 * scale]} />
+              <sphereGeometry args={[0.004 * scale]} />
               <meshStandardMaterial color="lightgray" />
             </>
           )}
