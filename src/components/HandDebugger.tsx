@@ -1,41 +1,38 @@
 import { useRef } from "react";
-import useHands from "../services/useHands";
+import useHands, { type Hand3D } from "../services/useHands";
 import { Group } from "three";
 
 type Props = {
+  handedness: Hand3D["handedness"];
   scale: number;
-  flippedX?: boolean;
-  flippedY?: boolean;
   position?: [x: number, y: number, z: number];
 };
-export default function HandsDebugger({
-  scale,
-  flippedX = false,
-  flippedY = false,
-  position,
-}: Props) {
+export default function HandDebugger({ handedness, scale, position }: Props) {
   const groupRef = useRef<Group>(null);
-  const scaleX = flippedX ? scale * -1 : scale;
-  const scaleY = flippedY ? scale * -1 : scale;
 
   useHands((hands) => {
     const group = groupRef.current;
     if (!group) {
       return;
     }
-
-    const hand = hands[0];
-    group.visible = !!hand?.keypoints3D;
-    if (!group.visible) {
+    const hand = hands.find((h) => h.handedness === handedness);
+    if (!hand?.keypoints3D) {
+      group.visible = false;
       return;
     }
+    group.visible = true;
     group.children.map((mesh, i) => {
       const pos = hand.keypoints3D?.[i];
       if (pos) {
-        mesh.position.set(pos.x * scaleX, pos.y * scaleY, (pos.z ?? 0) * scale);
+        mesh.position.set(
+          pos.x * scale * -1,
+          pos.y * scale * -1,
+          (pos.z ?? 0) * scale,
+        );
       }
     });
   });
+  const color = handedness === "Left" ? "red" : "blue";
 
   return (
     <group ref={groupRef} position={position}>
@@ -49,12 +46,12 @@ export default function HandsDebugger({
           ) : i == 4 ? (
             <>
               <sphereGeometry args={[0.01 * scale]} />
-              <meshStandardMaterial color="red" />
+              <meshStandardMaterial color={color} />
             </>
           ) : i == 12 || i === 8 ? (
             <>
-              <sphereGeometry args={[0.01 * scale]} />
-              <meshStandardMaterial color="blue" />
+              <sphereGeometry args={[0.008 * scale]} />
+              <meshStandardMaterial color={color} />
             </>
           ) : (
             <>

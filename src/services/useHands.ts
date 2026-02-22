@@ -44,7 +44,6 @@ function dispatch(hands: Hand3D[]) {
 export default function useHands(fn: Callback) {
   useEffect(() => {
     eventBus.push(fn);
-    document.body.append(video);
 
     return () => {
       eventBus = eventBus.filter((entry) => entry != fn);

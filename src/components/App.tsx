@@ -3,9 +3,10 @@ import { editable as e, SheetProvider } from "@theatre/r3f";
 import { PerspectiveCamera } from "@react-three/drei";
 import Puppet from "./Puppet";
 import { sceneSheet } from "../services/theatre";
-import HandsDebugger from "./HandsDebugger";
+import HandDebugger from "./HandDebugger";
 import { useGLTF } from "@react-three/drei";
 import gltfUrl from "./Puppet.glb?url";
+import { cameraHeight, cameraWidth } from "../services/webcam";
 
 const EditableCamera = e(PerspectiveCamera, "perspectiveCamera");
 
@@ -16,8 +17,9 @@ export default function App() {
     <Canvas
       gl={{ preserveDrawingBuffer: true }}
       style={{
-        width: 640,
-        height: 480,
+        width: "100%",
+        maxHeight: "100vh",
+        aspectRatio: cameraWidth + " / " + cameraHeight,
         background: "linear-gradient(to bottom, #d6f2ff, #65beff)",
       }}
     >
@@ -37,7 +39,12 @@ export default function App() {
 
         <Puppet handedness="Left" gltf={ernie} />
         <Puppet handedness="Right" gltf={ernie} />
-        <HandsDebugger scale={3} position={[0, -1.3, 0.5]} flippedY />
+        <HandDebugger handedness="Left" scale={3} position={[0.35, -1, 1.2]} />
+        <HandDebugger
+          handedness="Right"
+          scale={3}
+          position={[-0.35, -1, 1.2]}
+        />
       </SheetProvider>
     </Canvas>
   );

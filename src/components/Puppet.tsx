@@ -9,6 +9,7 @@ import lerp from "../services/lerp";
 import { clamp } from "three/src/math/MathUtils.js";
 import { useGraph, type ObjectMap } from "@react-three/fiber";
 import { SkeletonUtils, type GLTF } from "three-stdlib";
+import { cameraHeight, cameraWidth } from "../services/webcam";
 
 type Props = {
   handedness: Hand3D["handedness"];
@@ -56,28 +57,29 @@ export default function Puppet({ handedness, gltf }: Props) {
     head.rotation.set(lerp(head.rotation.x, mouthAngle, 0.8), 0, 0);
 
     // Rotate body based on knuckle positions
-    let angle = 0;
-    const maxDistance = 0.052;
+    let outward = false;
+    let knuckleDistance: number | undefined;
     if (hand.handedness === "Left" && pinkyMcp.x < indexMcp.x) {
-      angle = maxDistance - clamp(indexMcp.x - pinkyMcp.x, 0, maxDistance);
-      if (indexMcp.z < pinkyMcp.z) {
-        angle *= -1;
-      }
-      angle *= 25;
-      body.rotation.set(0, lerp(body.rotation.y, angle, 0.3), 0);
+      outward = indexMcp.z > pinkyMcp.z;
+      knuckleDistance = indexMcp.x - pinkyMcp.x;
     } else if (hand.handedness === "Right" && indexMcp.x < pinkyMcp.x) {
-      angle = maxDistance - clamp(pinkyMcp.x - indexMcp.x, 0, maxDistance);
-      if (pinkyMcp.z < indexMcp.z) {
-        angle *= -1;
-      }
-      angle *= 25;
+      outward = pinkyMcp.z > indexMcp.z;
+      knuckleDistance = pinkyMcp.x - indexMcp.x;
+    }
+    if (knuckleDistance !== undefined) {
+      const maxDistance = 0.052;
+      const angle =
+        (maxDistance - clamp(knuckleDistance, 0, maxDistance)) *
+        (outward ? -25 : 25);
       body.rotation.set(0, lerp(body.rotation.y, angle, 0.3), 0);
     }
+
     // Position based on 2D location on camera
-    const x = mapTo(hand.keypoints[0].x, 0, 640, -2, 2);
-    const y = mapTo(hand.keypoints[0].y, 0, 480, 0.5, -2.5);
+    const x = mapTo(hand.keypoints[0].x, 0, cameraWidth, 2, -2);
+    const y = mapTo(hand.keypoints[0].y, 0, cameraHeight, 0.5, -2.5);
+    const offset = handedness === "Left" ? 0.2 : -0.2;
     body.position.set(
-      lerp(body.position.x, x, 0.9),
+      lerp(body.position.x, x + offset, 0.9),
       lerp(body.position.y, y, 0.7),
       0,
     );
