@@ -18,7 +18,7 @@ type Props = {
 export default function Puppet({ handedness, gltf }: Props) {
   const clone = useMemo(() => SkeletonUtils.clone(gltf.scene), [gltf.scene]);
   const {
-    nodes: { Puppet: puppet, Body: body, Head: head },
+    nodes: { Puppet: puppet, Body: body, Head: head, Jaw: jaw },
   } = useGraph(clone);
 
   useHands((hands) => {
@@ -52,8 +52,8 @@ export default function Puppet({ handedness, gltf }: Props) {
       Math.min(distanceIndexFinger, distanceMiddleFinger),
       0.05,
       0.15,
-      1.8,
-      -0.4,
+      -0.25,
+      -2,
     );
     head.rotation.set(lerp(head.rotation.x, mouthAngle, 0.85), 0, 0);
 
@@ -71,8 +71,10 @@ export default function Puppet({ handedness, gltf }: Props) {
       const maxDistance = 0.052;
       const angle =
         (maxDistance - clamp(knuckleDistance, 0, maxDistance)) *
-        (outward ? -25 : 25);
-      body.rotation.set(0, lerp(body.rotation.y, angle, 0.3), 0);
+        (outward ? -20 : 20);
+      const rotation = lerp(body.rotation.y, angle, 0.3);
+      body.rotation.set(0, rotation, 0);
+      jaw.rotation.set(jaw.rotation.x, jaw.rotation.y, rotation * -0.7);
     }
 
     // Position based on 2D location on camera
@@ -87,11 +89,36 @@ export default function Puppet({ handedness, gltf }: Props) {
   });
 
   useEffect(() => {
-    const editableHead = puppetSheet.object(`Head${handedness}`, {
+    const range: [min: number, max: number] = [-Math.PI, Math.PI];
+    const editableBody = puppetSheet.object(`Body_${handedness}`, {
       rotation: types.compound({
-        x: types.number(head.rotation.x, { range: [-1, 2] }),
-        y: types.number(head.rotation.y),
-        z: types.number(head.rotation.z),
+        x: types.number(body.rotation.x, { range }),
+        y: types.number(body.rotation.y, { range }),
+        z: types.number(body.rotation.z, { range }),
+      }),
+    });
+    editableBody.onValuesChange((values) => {
+      const { x, y, z } = values.rotation;
+      body.rotation.set(x, y, z);
+    });
+
+    const editableJaw = puppetSheet.object(`Jaw_${handedness}`, {
+      rotation: types.compound({
+        x: types.number(jaw.rotation.x, { range }),
+        y: types.number(jaw.rotation.y, { range }),
+        z: types.number(jaw.rotation.z, { range }),
+      }),
+    });
+    editableJaw.onValuesChange((values) => {
+      const { x, y, z } = values.rotation;
+      jaw.rotation.set(x, y, z);
+    });
+
+    const editableHead = puppetSheet.object(`Head_${handedness}`, {
+      rotation: types.compound({
+        x: types.number(head.rotation.x, { range }),
+        y: types.number(head.rotation.y, { range }),
+        z: types.number(head.rotation.z, { range }),
       }),
     });
     editableHead.onValuesChange((values) => {
@@ -99,22 +126,12 @@ export default function Puppet({ handedness, gltf }: Props) {
       head.rotation.set(x, y, z);
     });
 
-    const editableBody = puppetSheet.object(`Body${handedness}`, {
-      rotation: types.compound({
-        x: types.number(body.rotation.x),
-        y: types.number(body.rotation.y),
-        z: types.number(body.rotation.z),
-      }),
-    });
-    editableBody.onValuesChange((values) => {
-      const { x, y, z } = values.rotation;
-      body.rotation.set(x, y, z);
-    });
     return () => {
-      puppetSheet.detachObject(`Body${handedness}`);
-      puppetSheet.detachObject(`Head${handedness}`);
+      puppetSheet.detachObject(`Body_${handedness}`);
+      puppetSheet.detachObject(`Jaw_${handedness}`);
+      puppetSheet.detachObject(`Head_${handedness}`);
     };
-  }, [handedness, body, head]);
+  }, [handedness, body, jaw, head]);
   return (
     <SheetProvider sheet={puppetSheet}>
       <primitive object={puppet} />
