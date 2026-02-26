@@ -4,15 +4,12 @@ import { PerspectiveCamera } from "@react-three/drei";
 import Puppet from "./Puppet";
 import { sceneSheet } from "../services/theatre";
 import HandDebugger from "./HandDebugger";
-import { useGLTF } from "@react-three/drei";
-import gltfUrl from "./Puppet.glb?url";
 import useHands from "../services/useHands";
 import { useRef } from "react";
 
 const EditableCamera = e(PerspectiveCamera, "perspectiveCamera");
 
 export default function Scene() {
-  const ernie = useGLTF(gltfUrl);
   const noHandsRef = useRef<HTMLDivElement>(null);
   useHands((hands) => {
     const div = noHandsRef.current;
@@ -46,8 +43,8 @@ export default function Scene() {
             intensity={5}
           />
 
-          <Puppet handedness="Left" gltf={ernie} />
-          <Puppet handedness="Right" gltf={ernie} />
+          <Puppet handedness="Left" />
+          <Puppet handedness="Right" />
           {import.meta.env.DEV && (
             <>
               <HandDebugger

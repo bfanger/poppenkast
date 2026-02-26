@@ -1,5 +1,5 @@
 import { SheetProvider } from "@theatre/r3f";
-import { useEffect, useMemo } from "react";
+import { useEffect } from "react";
 import { types } from "@theatre/core";
 import useHands, { type Hand3D } from "../services/useHands";
 import { Vector3 } from "three";
@@ -7,19 +7,20 @@ import { puppetSheet } from "../services/theatre";
 import mapTo from "../services/mapTo";
 import lerp from "../services/lerp";
 import { clamp } from "three/src/math/MathUtils.js";
-import { useGraph, type ObjectMap } from "@react-three/fiber";
-import { SkeletonUtils, type GLTF } from "three-stdlib";
 import { cameraHeight, cameraWidth } from "../services/webcam";
+import { useGLTF } from "@react-three/drei";
+import ernieGlb from "./Ernie.glb?url";
+import bertGlb from "./Bert.glb?url";
 
 type Props = {
   handedness: Hand3D["handedness"];
-  gltf: ObjectMap & GLTF;
 };
-export default function Puppet({ handedness, gltf }: Props) {
-  const clone = useMemo(() => SkeletonUtils.clone(gltf.scene), [gltf.scene]);
+export default function Puppet({ handedness }: Props) {
+  const glbUrl = handedness === "Left" ? bertGlb : ernieGlb;
+  const maxOpen = handedness === "Left" ? -1.5 : -2;
   const {
     nodes: { Puppet: puppet, Body: body, Head: head, Jaw: jaw },
-  } = useGraph(clone);
+  } = useGLTF(glbUrl);
 
   useHands((hands) => {
     const hand = hands.find((h) => h.handedness === handedness);
@@ -53,7 +54,7 @@ export default function Puppet({ handedness, gltf }: Props) {
       0.05,
       0.15,
       -0.25,
-      -2,
+      maxOpen,
     );
     head.rotation.set(lerp(head.rotation.x, mouthAngle, 0.85), 0, 0);
 

@@ -26,4 +26,4 @@ dist-ssr
 /public/litert_wasm
 /public/model.tflite
 /public/mediapipe_hands
-/art/Puppet.blend1
+/art/*.blend1
