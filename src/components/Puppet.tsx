@@ -9,18 +9,16 @@ import lerp from "../services/lerp";
 import { clamp } from "three/src/math/MathUtils.js";
 import { cameraHeight, cameraWidth } from "../services/webcam";
 import { useGLTF } from "@react-three/drei";
-import ernieGlb from "./Ernie.glb?url";
-import bertGlb from "./Bert.glb?url";
 
 type Props = {
+  glb: string;
   handedness: Hand3D["handedness"];
 };
-export default function Puppet({ handedness }: Props) {
-  const glbUrl = handedness === "Left" ? bertGlb : ernieGlb;
+export default function Puppet({ glb, handedness }: Props) {
   const maxOpen = handedness === "Left" ? -1.5 : -2;
   const {
     nodes: { Puppet: puppet, Body: body, Head: head, Jaw: jaw },
-  } = useGLTF(glbUrl);
+  } = useGLTF(glb);
 
   useHands((hands) => {
     const hand = hands.find((h) => h.handedness === handedness);

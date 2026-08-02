@@ -1,14 +1,24 @@
 import { useEffect, useState } from "react";
 import theatreJpg from "./theatre.jpg?url";
 import getWebcam, { webcamPermission } from "../services/webcam";
+import Progress from "./Progress";
+import ernieGlb from "./Ernie.glb?url";
+import bertGlb from "./Bert.glb?url";
+import loadWithProgress from "../services/loadWithProgress";
+
+export type PuppetUrls = {
+  left: string;
+  right: string;
+};
 type Props = {
   preload: () => Promise<unknown>;
-  onStart: () => void;
+  onStart: (urls: PuppetUrls) => void;
 };
 export default function LandingPage({ preload, onStart }: Props) {
   const [status, setStatus] = useState<
     "detect" | "prompt" | "denied" | "loading" | "error"
   >("detect");
+  const [progress, setProgress] = useState(0);
 
   const [start] = useState(() => async () => {
     try {
@@ -21,8 +31,29 @@ export default function LandingPage({ preload, onStart }: Props) {
     }
     try {
       setStatus("loading");
-      await preload();
-      onStart();
+      const shared: Record<string, number> = {};
+      function updateProgress(key: string, percentage: number) {
+        shared[key] = percentage;
+        let value = 0;
+        for (const section of Object.values(shared)) {
+          value += section;
+        }
+        setProgress(value);
+      }
+      const urls = { left: bertGlb, right: ernieGlb };
+
+      updateProgress("base", 5);
+      await Promise.all([
+        preload().then(() => updateProgress("code", 35)),
+        loadWithProgress(ernieGlb, (f) => updateProgress("ernie", f * 35)).then(
+          (url) => (urls.right = url),
+        ),
+        loadWithProgress(bertGlb, (f) => updateProgress("bert", f * 25)).then(
+          (url) => (urls.left = url),
+        ),
+      ]);
+      await new Promise((resolve) => setTimeout(resolve, 500));
+      onStart(urls);
     } catch (err) {
       console.error(err);
       setStatus("error");
@@ -75,7 +106,9 @@ export default function LandingPage({ preload, onStart }: Props) {
           </section>
         )}
         {status === "loading" && (
-          <p className="animate-pulse">Bezig met laden...</p>
+          <div className="mx-auto w-100 max-w-9/10">
+            <Progress value={progress} />
+          </div>
         )}
         {status === "detect" && (
           <p className="animate-pulse">Webcam detecteren...</p>

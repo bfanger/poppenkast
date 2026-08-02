@@ -9,7 +9,11 @@ import { useRef } from "react";
 
 const EditableCamera = e(PerspectiveCamera, "perspectiveCamera");
 
-export default function Scene() {
+type Props = {
+  leftGlb: string;
+  rightGlb: string;
+};
+export default function Scene({ leftGlb, rightGlb }: Props) {
   const noHandsRef = useRef<HTMLDivElement>(null);
   useHands((hands) => {
     const div = noHandsRef.current;
@@ -43,8 +47,8 @@ export default function Scene() {
             intensity={5}
           />
 
-          <Puppet handedness="Left" />
-          <Puppet handedness="Right" />
+          <Puppet glb={leftGlb} handedness="Left" />
+          <Puppet glb={rightGlb} handedness="Right" />
           {import.meta.env.DEV && (
             <>
               <HandDebugger
