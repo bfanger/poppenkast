@@ -9,7 +9,7 @@
     "preview": "vite preview",
     "lint": "tsc && eslint --max-warnings 0 && prettier --check src",
     "format": "eslint --fix && prettier --write src",
-    "postinstall": "mkdir -p public/mediapipe_hands && cp -r node_modules/@mediapipe/hands/* public/mediapipe_hands",
+    "postinstall": "node src/scripts/copyModels.ts",
     "prepare": "husky || true"
   },
   "devDependencies": {
